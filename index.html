@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Password Hash Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top, #00ffff33, transparent 40%),
+                linear-gradient(135deg, #05050a, #0a0f1f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .container {
+            width: 400px;
+            padding: 25px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        label {
+            font-size: 13px;
+            margin-top: 10px;
+            display: block;
+        }
+
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            background: #020617;
+            color: #00ffff;
+            box-shadow: inset 0 0 8px #00ffff55;
+        }
+
+        textarea {
+            resize: none;
+            height: 60px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00ffff, #7c7cff);
+            color: #000;
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        button:hover {
+            box-shadow: 0 0 25px #00ffff;
+        }
+
+        .output {
+            margin-top: 12px;
+        }
+
+        .output textarea {
+            height: 80px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>PASSWORD HASH</h2>
+
+        <label>Enter Password</label>
+        <textarea id="password" placeholder="Enter password here..."></textarea>
+
+        <label>Select Hash Algorithm</label>
+        <select id="algorithm">
+            <option value="SHA-256">SHA-256 (Recommended)</option>
+            <option value="SHA-512">SHA-512</option>
+            <option value="MD5">MD5 (Insecure)</option>
+            <option value="SHA-1">SHA-1 (Insecure)</option>
+        </select>
+
+        <button onclick="generateHash()">GENERATE HASH</button>
+
+        <div class="output">
+            <label>Generated Hash</label>
+            <textarea id="hash" readonly></textarea>
+        </div>
+
+        <div class="footer">Made By Raghav Arora</div>
+    </div>
+
+    <script>
+        async function generateHash() {
+            const password = document.getElementById("password").value;
+            const algo = document.getElementById("algorithm").value;
+            const output = document.getElementById("hash");
+
+            if (!password) {
+                alert("Please enter a password!");
+                return;
+            }
+
+            if (algo === "MD5") {
+                output.value = md5(password);
+            } else if (algo === "SHA-1") {
+                output.value = sha1(password);
+            } else {
+                const hashBuffer = await crypto.subtle.digest(algo, new TextEncoder().encode(password));
+                output.value = bufferToHex(hashBuffer);
+            }
+        }
+
+        function bufferToHex(buffer) {
+            return [...new Uint8Array(buffer)]
+                .map(b => b.toString(16).padStart(2, "0"))
+                .join("");
+        }
+
+        /* --- Simple JS MD5 & SHA1 (for demo only) --- */
+        function md5(str) {
+            return CryptoJS.MD5(str).toString();
+        }
+        function sha1(str) {
+            return CryptoJS.SHA1(str).toString();
+        }
+    </script>
+
+    <!-- CryptoJS for MD5 & SHA1 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+</body>
+
+</html>
